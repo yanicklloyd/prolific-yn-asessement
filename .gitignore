@@ -1,0 +1,9 @@
+dbt_packages/
+logs/
+.DS_Store
+.idea/
+.user.yml
+venv/
+.venv
+target/
+
