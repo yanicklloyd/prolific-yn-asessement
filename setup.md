@@ -8,6 +8,18 @@
 git clone [repository-url]
 cd global_transactions
 ```
+### 1.B Setup the python environment and requirments 
+```bash
+python3.9 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+If `python3.9` is not already install run first
+```bash
+brew install python@3.9
+```
 
 ### 2. Connect to the Database
 
