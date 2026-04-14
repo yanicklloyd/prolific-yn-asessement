@@ -6,6 +6,6 @@ global_transactions:
       threads: 1
       database: 'database'
       schema: 'main'
-      schema_directory: 'target'
+      schema_directory: '.'
       schemas_and_paths:
-        main: 'target/global_transactions.db'
+        main: 'global_transactions.db'
