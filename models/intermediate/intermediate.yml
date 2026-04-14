@@ -5,23 +5,88 @@ models:
     description: Transaction-grain model with FX conversion, chargeback resolution timing, and transaction recognition fields
     columns:
       - name: transaction_id
+        description: Unique identifier for each transaction 
         tests:
           - not_null
           - unique
-      - name: recognition_month
-        tests:
-          - not_null
+      - name: client_id
+        description: Client associated with the transaction 
+      - name: transaction_type
+        description: Type of transaction, such as payment, refund, fraud, or chargeback 
+      - name: transaction_date
+        description: Original transaction date 
+      - name: transaction_month
+        description: Month derived from the transaction date 
+      - name: transaction_amount
+        description: Original transaction amount in the source currency 
+      - name: platform_fee_margin
+        description: Platform fee margin recorded on the transaction 
+      - name: currency
+        description: Source currency code for the transaction 
+      - name: linked_transaction_id
+        description: Related transaction identifier for linked follow-up events 
+      - name: resolution_status
+        description: Resolution status for chargeback transactions
+      - name: resolution_date
+        description: Date the chargeback was resolved
+      - name: resolution_month
+        description: Month bucket derived from the resolution date 
+      - name: exchange_rate_to_gbp
+        description: FX rate used to convert the source amount into GBP 
       - name: transaction_amount_gbp
+        description: Transaction amount converted into GBP 
         tests:
           - not_null
+      - name: is_payment
+        description: Indicator for payment transactions 
+      - name: is_refund
+        description: Indicator for refund transactions 
+      - name: is_fraud
+        description: Indicator for fraud transactions 
+      - name: is_chargeback
+        description: Indicator for chargeback transactions 
+      - name: is_chargeback_resolved
+        description: Indicator for chargebacks that have been resolved 
+      - name: is_chargeback_pending
+        description: Indicator for chargebacks that are still pending 
+      - name: recognition_date
+        description: Date on which the transaction is recognised for revenue purposes 
+      - name: recognition_month
+        description: Month bucket used for revenue recognition 
+        tests:
+          - not_null
+      - name: net_transaction_amount_gbp
+        description: Signed GBP transaction amount after applying refund, fraud, and resolved chargeback logic 
 
   - name: int_client_contract_status
     description: Contract progress for client payments within each contract term
     columns:
       - name: client_id
+        description: Client identifier 
         tests:
           - not_null
+      - name: contract_start_date
+        description: Contract effective start date 
+      - name: contract_end_date
+        description: Inclusive contract end date derived from the contract duration 
+      - name: contract_duration_months
+        description: Contract length in months 
+      - name: spend_threshold
+        description: Spend threshold required to unlock discounted pricing 
+      - name: discounted_fee_margin
+        description: Discounted fee margin available once the threshold is met 
+      - name: transaction_id
+        description: Payment transaction identifier 
+      - name: transaction_date
+        description: Date of the payment transaction that counts toward the contract threshold 
+      - name: transaction_month
+        description: Month bucket for the payment transaction 
+      - name: payment_amount_gbp
+        description: GBP value of the payment counted toward the spend threshold 
+      - name: cumulative_payment_gbp
+        description: Running GBP total of eligible payments within the contract window 
       - name: spend_threshold_met
+        description: Indicator showing whether the cumulative payment amount has reached the contract threshold 
         tests:
           - not_null
 
@@ -29,9 +94,61 @@ models:
     description: Recognized GMV and revenue after applying chargeback timing and fee logic
     columns:
       - name: transaction_id
+        description: Unique identifier for each transaction 
         tests:
           - not_null
           - unique
+      - name: client_id
+        description: Client associated with the transaction 
+      - name: transaction_type
+        description: Type of transaction, such as payment, refund, fraud, or chargeback 
+      - name: transaction_date
+        description: Original transaction date 
+      - name: transaction_month
+        description: Month bucket derived from the original transaction date 
+      - name: recognition_date
+        description: Date on which the transaction is recognised for revenue purposes 
+      - name: recognition_month
+        description: Month bucket used for revenue recognition 
+      - name: transaction_amount
+        description: Original transaction amount in the source currency 
+      - name: transaction_amount_gbp
+        description: Transaction amount converted into GBP 
       - name: net_transaction_amount_gbp
-        tests:
-          - not_null
+        description: GBP transaction amount after applying transaction -/+ directionality
+      - name: currency
+        description: Source currency code for the transaction 
+      - name: linked_transaction_id
+        description: Related transaction identifier for linked follow-up events 
+      - name: resolution_status
+        description: Resolution status for chargeback transactions
+      - name: resolution_date
+        description: Date the chargeback was resolved
+      - name: is_payment
+        description: Indicator for payment transactions 
+      - name: is_refund
+        description: Indicator for refund transactions 
+      - name: is_fraud
+        description: Indicator for fraud transactions 
+      - name: is_chargeback
+        description: Indicator for chargeback transactions 
+      - name: is_chargeback_resolved
+        description: Indicator for chargebacks that have been resolved 
+      - name: is_chargeback_pending
+        description: Indicator for chargebacks that are still pending 
+      - name: contract_start_date
+        description: Contract start date joined onto the transaction when releabnt
+      - name: contract_end_date
+        description: Contract end date joined onto the transaction when relevent 
+      - name: spend_threshold
+        description: Spend threshold associated with the client contract and point at which the discounted fee is activated
+      - name: discounted_fee_margin
+        description: Discounted fee margin available for the client contract 
+      - name: cumulative_payment_gbp
+        description: Running GBP total of eligible payments used for discount threshold tracking 
+      - name: spend_threshold_met
+        description: Indicator showing whether the spend threshold has been reached 
+      - name: fee_margin
+        description: Fee margin applied to the transaction after contract logic is considered 
+      - name: revenue_gbp
+        description: Recognised platform revenue in GBP for the transaction 

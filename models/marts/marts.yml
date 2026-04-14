@@ -5,8 +5,34 @@ models:
     description: Monthly client revenue mart
     columns:
       - name: client_id
+        description: Client identifier 
         tests:
           - not_null
       - name: revenue_month
+        description: Month bucket for recognised revenue 
         tests:
           - not_null
+      - name: gmv_gbp
+        description: Gross merchandise value in GBP based on payment transactions in the month 
+      - name: recognised_revenue_gbp
+        description: Recognised platform revenue in GBP for the client-month 
+      - name: gross_payment_gbp
+        description: Total GBP value of payment transactions in the month 
+      - name: gross_refund_gbp
+        description: Total GBP value of refund transactions in the month 
+      - name: gross_fraud_gbp
+        description: Total GBP value of fraud transactions in the month 
+      - name: gross_resolved_chargeback_gbp
+        description: Total GBP value of resolved chargebacks recognised in the month 
+      - name: contract_start_date
+        description: Contract start date associated with the client-month when available 
+      - name: contract_end_date
+        description: Contract end date associated with the client-month when available 
+      - name: spend_threshold
+        description: Spend threshold associated with the client contract 
+      - name: cumulative_payment_gbp
+        description: Running GBP total of eligible payments used for threshold tracking 
+      - name: spend_threshold_met
+        description: Indicator showing whether the spend threshold has been reached in that month
+      - name: discount_application_status
+        description: Label showing whether discount pricing applies for the client-month 
