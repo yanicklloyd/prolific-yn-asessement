@@ -1,5 +1,5 @@
 with source as (
-    select * from {{ ref('transactions') }}
+    select * from {{ source('sqlite_raw', 'transactions') }}
 ),
 
 src_transactions as (
@@ -11,7 +11,7 @@ src_transactions as (
         date(transaction_date) as transaction_date,
         platform_fee_margin,
         currency,
-        linked_transaction_id,
+        linked_transaction_id
         
     from source
 )

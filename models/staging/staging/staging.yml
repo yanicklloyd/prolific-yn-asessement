@@ -1,0 +1,115 @@
+version: 2
+
+sources:
+  - name: sqlite_raw
+    schema: main
+    description: Raw tables available in the SQLite assessment database.
+    tables:
+      - name: transactions
+        description: Raw platform transactions
+      - name: client_contracts
+        description: Raw client contract agreements
+      - name: currency_rates
+        description: Raw daily FX rates to GBP
+      - name: transaction_resolutions
+        description: Raw chargeback resolution statuses
+
+models:
+  - name: stg_transactions
+    description: Standardized transaction records from the raw transactions seed
+    columns:
+      - name: transaction_id
+        description: Unique identifier for each transaction
+        tests:
+          - not_null:
+              config:
+                severity: error
+          - unique:
+              config:
+                severity: error
+      - name: client_id
+        description: Client associated with the transaction
+      - name: transaction_amount
+        description: Original transaction amount in the source currency
+      - name: transaction_type
+        description: Type of transaction, such as payment, refund, fraud, or chargeback
+        tests:
+          - not_null
+      - name: transaction_date
+        description: Transaction date
+        tests:
+          - not_null
+      - name: platform_fee_margin
+        description: Platform fee margin in effect on the transaction
+      - name: currency
+        description: Currency code for the transaction amount
+        tests:
+          - not_null
+      - name: linked_transaction_id
+        description: Related transaction identifier for follow-up events
+
+  - name: stg_client_contracts
+    description: Client contract terms used for discount eligibility
+    columns:
+      - name: client_id
+        description: Client identifier
+        tests:
+          - not_null:
+              config:
+                severity: error
+      - name: contract_start_date
+        description: Contract effective start date
+        tests:
+          - not_null
+      - name: contract_duration_months
+        description: Contract length in months
+        tests:
+          - not_null
+      - name: spend_threshold
+        description: Spend threshold required to unlock the discounted fee margin --assumption
+
+      - name: discounted_fee_margin
+        description: Discounted % discount once the spend threshold is met
+          
+
+  - name: stg_currency_rates
+    description: Daily exchange rates used to convert source currency amounts into GBP
+    columns:
+      - name: currency
+        description: Currency code
+        tests:
+          - not_null
+      - name: rate_date
+        description: Effective date for the exchange rate
+        tests:
+          - not_null
+      - name: exchange_rate_to_gbp
+        description: Multiplier used to convert the source currency amount to GBP
+        tests:
+          - not_null
+
+  - name: stg_transaction_resolutions
+    description: Outcomes for chargeback-related transactions
+    columns:
+      - name: transaction_id
+        description: Transaction identifier tied to a chargeback resolution
+        tests:
+          - not_null:
+              config:
+                severity: error
+          - unique:
+              config:
+                severity: error
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+              config:
+                severity: error
+
+      - name: resolution_status
+        description: Resolution state for the transaction
+        tests:
+          - not_null
+      - name: resolution_date
+        description: Date the chargeback resolution was finalized, when available

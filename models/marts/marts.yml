@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: mart_monthly_revenue
+    description: Monthly client revenue mart
+    columns:
+      - name: client_id
+        tests:
+          - not_null
+      - name: revenue_month
+        tests:
+          - not_null
