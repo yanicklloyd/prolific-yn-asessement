@@ -3,19 +3,65 @@ version: 2
 sources:
   - name: sqlite_raw
     schema: main
-    description: Raw tables available in the SQLite assessment database.
+    description: Raw tables available in the SQLite assessment database 
     tables:
       - name: transactions
         description: Raw platform transactions
+        columns:
+          - name: transaction_id
+            description: Unique identifier for each transaction in the raw source 
+          - name: client_id
+            description: Client associated with the transaction in the raw source 
+          - name: transaction_amount
+            description: Original transaction amount in the source currency 
+          - name: transaction_type
+            description: Type of transaction, such as payment, refund, fraud, or chargeback 
+          - name: transaction_date
+            description: Original transaction date from the raw source 
+          - name: platform_fee_margin
+            description: Platform fee margin recorded on the raw transaction 
+          - name: currency
+            description: Source currency code for the transaction 
+          - name: linked_transaction_id
+            description: Related transaction identifier for linked follow-up events 
       - name: client_contracts
         description: Raw client contract agreements
+        columns:
+          - name: client_id
+            description: Client identifier in the raw contract source 
+          - name: contract_start_date
+            description: Date the client contract starts 
+          - name: contract_duration_months
+            description: Contract duration in months 
+          - name: spend_threshold
+            description: Spend threshold required to unlock discounted pricing 
+          - name: discounted_fee_margin
+            description: Discounted fee margin available once the threshold is met 
       - name: currency_rates
         description: Raw daily FX rates to GBP
+        columns:
+          - name: currency
+            description: Source currency code for the FX rate 
+          - name: rate_date
+            description: Date on which the FX rate applies 
+          - name: exchange_rate_to_gbp
+            description: FX rate used to convert the source currency into GBP 
       - name: transaction_resolutions
         description: Raw chargeback resolution statuses
+        columns:
+          - name: transaction_id
+            description: Transaction identifier tied to a raw resolution record 
+          - name: resolution_status
+            description: Resolution outcome for the transaction 
+          - name: resolution_date
+            description: Date the chargeback resolution was completed, when available 
 
 models:
   - name: stg_transactions
+    tests:
+      - fx_rate_exists:
+          currency_column: currency
+          date_column: transaction_date
     description: Standardized transaction records from the raw transactions seed
     columns:
       - name: transaction_id
