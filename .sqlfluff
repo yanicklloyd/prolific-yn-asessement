@@ -1,0 +1,9 @@
+[sqlfluff]
+templater = dbt
+dialect = sqlite
+
+[sqlfluff:templater:dbt]
+project_dir = .
+profiles_dir = ~/.dbt
+profile = global_transactions
+target = dev

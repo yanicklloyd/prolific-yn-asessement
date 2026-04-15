@@ -14,7 +14,11 @@ date_mappings as (
     select * from {{ ref('date_mappings') }}
 ),
 
-enriched as (
+client_contracts as (
+    select * from {{ ref('stg_client_contracts') }}
+),
+
+base_enriched as (
     select
         t.transaction_id,
         t.client_id,
@@ -67,6 +71,28 @@ enriched as (
         on t.transaction_date = dmt.calendar_date
     left join date_mappings dmr
         on tr.resolution_date = dmr.calendar_date
+),
+
+enriched_with_contracts as (
+    select
+        b.*,
+        cc.contract_start_date,
+        date(cc.contract_start_date, '+' || cc.contract_duration_months || ' months', '-1 day') as contract_end_date,
+        cc.contract_duration_months,
+        cc.spend_threshold,
+        cc.discounted_fee_margin,
+        case
+            when cc.client_id is not null then 1
+            else 0
+        end as is_in_contract_period
+    from base_enriched b
+    left join client_contracts cc
+        on b.client_id = cc.client_id
+       and b.recognition_date >= cc.contract_start_date
+       and b.recognition_date <= date(cc.contract_start_date, '+' || cc.contract_duration_months || ' months', '-1 day')
 )
 
-select * from enriched
+select *
+from enriched_with_contracts
+
+
