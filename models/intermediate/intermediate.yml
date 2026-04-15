@@ -57,6 +57,22 @@ models:
           - not_null
       - name: net_transaction_amount_gbp
         description: Signed GBP transaction amount after applying refund, fraud, and resolved chargeback logic 
+      - name: contract_start_date
+        description: Contract start date matched to the transaction based on the recognition date
+      - name: contract_end_date
+        description: Contract end date matched to the transaction based on the recognition date
+      - name: contract_duration_months
+        description: Duration of the matched contract in months
+      - name: spend_threshold
+        description: Spend threshold associated with the matched contract
+      - name: discounted_fee_margin
+        description: Discounted fee margin associated with the matched contract
+      - name: original_platform_fee_margin
+        description: Platform fee margin from the original linked transaction
+      - name: original_discounted_fee_margin
+        description: Discounted fee margin from the original linked transaction's contract
+      - name: is_in_contract_period
+        description: Indicator showing whether the transaction recognition date falls within a contract period
 
   - name: int_client_contract_status
     description: Contract progress for client payments within each contract term
@@ -140,15 +156,21 @@ models:
         description: Contract start date joined onto the transaction when releabnt
       - name: contract_end_date
         description: Contract end date joined onto the transaction when relevent 
+      - name: platform_fee_margin
+        description: Platform fee margin recorded on the transaction 
       - name: spend_threshold
         description: Spend threshold associated with the client contract and point at which the discounted fee is activated
       - name: discounted_fee_margin
         description: Discounted fee margin available for the client contract 
       - name: cumulative_payment_gbp
         description: Running GBP total of eligible payments used for discount threshold tracking 
+      - name: original_platform_fee_margin
+        description: Platform fee margin from the original linked transaction this is for proper refund logic 
+      - name: original_discounted_fee_margin
+        description: Discounted fee margin from the original linked transaction's contract this is for proper refund logic 
       - name: spend_threshold_met
         description: Indicator showing whether the spend threshold has been reached 
       - name: fee_margin
-        description: Fee margin applied to the transaction after contract logic is considered 
+        description: Fee margin applied to the transaction after contract logic is considered, including original transaction pricing for linked refunds. 
       - name: revenue_gbp
-        description: Recognised platform revenue in GBP for the transaction 
+        description: Recognised platform revenue in GBP for the transaction. 

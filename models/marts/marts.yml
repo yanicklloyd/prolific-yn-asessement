@@ -28,10 +28,6 @@ models:
         description: Contract start date associated with the client-month when available 
       - name: contract_end_date
         description: Contract end date associated with the client-month when available 
-      - name: spend_threshold
-        description: Spend threshold associated with the client contract 
-      - name: cumulative_payment_gbp
-        description: Running GBP total of eligible payments used for threshold tracking 
       - name: spend_threshold_met
         description: Indicator showing whether the spend threshold has been reached in that month
       - name: discount_application_status

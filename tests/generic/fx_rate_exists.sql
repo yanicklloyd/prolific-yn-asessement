@@ -19,6 +19,7 @@ missing_rates as (
         on t.{{ currency_column }} = cr.currency
        and t.{{ date_column }} = cr.rate_date
     where cr.currency is null
+    and t.{{ currency_column }} != 'GBP' -- Excluding GBP it made the test too stingent and we only really care about non GBP transactions
 )
 
 select *
